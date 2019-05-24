@@ -538,22 +538,32 @@ namespace Library
             {
                 Console.Clear();
                 GetMemberId();
-                OpenConnection();
-                SqlCommand command = new SqlCommand("DELETE FROM Members WHERE Id =" + memberId + " ", connection);
-
-                int i = command.ExecuteNonQuery();
-                if (i > 0)
+                if ((CheckLendStatus1() == 0) && (CheckLendStatus2() == 0) && (CheckLendStatus3() == 0))
                 {
-                    Console.WriteLine("Deletion successfull.");
-                    tempDate = DateTime.Now;
-                    SqlCommand historyUpdate = new SqlCommand("INSERT INTO History (MemberID, DateTime, Type) VALUES ('" + memberId + "', @value , 'Member Deletion')", connection);
-                    historyUpdate.Parameters.AddWithValue("@value", tempDate);
-                    historyUpdate.ExecuteNonQuery();
+                    OpenConnection();
+                    SqlCommand command = new SqlCommand("DELETE FROM Members WHERE Id =" + memberId + " ", connection);
+
+                    int i = command.ExecuteNonQuery();
+                    if (i > 0)
+                    {
+                        Console.WriteLine("Deletion successfull.");
+                        tempDate = DateTime.Now;
+                        SqlCommand historyUpdate = new SqlCommand("INSERT INTO History (MemberID, DateTime, Type) VALUES ('" + memberId + "', @value , 'Member Deletion')", connection);
+                        historyUpdate.Parameters.AddWithValue("@value", tempDate);
+                        historyUpdate.ExecuteNonQuery();
+                    }
+                    Console.WriteLine("Press ENTER to return to main menu.");
+                    Console.ReadLine();
+                    CloseConnection();
+                    Menu();
                 }
-                Console.WriteLine("Press ENTER to return to main menu.");
-                Console.ReadLine();
-                CloseConnection();
-                Menu();
+                else
+                {
+                    Console.WriteLine("User has at least one book borrowed. Please return all the books before user deletion.");
+                    Console.WriteLine("Press ENTER to return to main menu.");
+                    Console.ReadLine();
+                    Menu();
+                }
             }
 
             void ListBooks()
@@ -740,7 +750,7 @@ namespace Library
                 }
             }
 
-           // Menu();
+            Menu();
         }
     }
 }
