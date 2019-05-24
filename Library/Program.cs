@@ -327,7 +327,7 @@ namespace Library
                     Console.WriteLine("");
                     Console.WriteLine("Press ENTER to return to main menu...");
                     Console.ReadLine();
-                    //Menu();
+                    Menu();
                 }
                 
             }
