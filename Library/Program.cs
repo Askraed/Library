@@ -476,23 +476,32 @@ namespace Library
             void DeleteBook()
             {
                 Console.Clear();
-                GetBookId();
-                OpenConnection();
-                SqlCommand command = new SqlCommand("DELETE FROM Books WHERE Id ="+bookId+" ", connection);
-                
-                int i = command.ExecuteNonQuery();
-                if (i > 0)
+                if (CheckBookStatus() == 0)
                 {
-                    Console.WriteLine("Deletion successfull.");
-                    tempDate = DateTime.Now;
-                    SqlCommand historyUpdate = new SqlCommand("INSERT INTO History (BookID, DateTime, Type) VALUES ('" + bookId + "', @value , 'Book Deletion')", connection);
-                    historyUpdate.Parameters.AddWithValue("@value", tempDate);
-                    historyUpdate.ExecuteNonQuery();
+                    Console.WriteLine("Selected book is lended. It has to be returned first in order to delete it.");
+                    Console.WriteLine("Press ENTER to return to main menu.");
+                    Console.ReadLine();
+                    Menu();
                 }
-                Console.WriteLine("Press ENTER to return to main menu.");
-                Console.ReadLine();
-                CloseConnection();
-                Menu();
+                else
+                {
+                    OpenConnection();
+                    SqlCommand command = new SqlCommand("DELETE FROM Books WHERE Id =" + bookId + " ", connection);
+
+                    int i = command.ExecuteNonQuery();
+                    if (i > 0)
+                    {
+                        Console.WriteLine("Deletion successfull.");
+                        tempDate = DateTime.Now;
+                        SqlCommand historyUpdate = new SqlCommand("INSERT INTO History (BookID, DateTime, Type) VALUES ('" + bookId + "', @value , 'Book Deletion')", connection);
+                        historyUpdate.Parameters.AddWithValue("@value", tempDate);
+                        historyUpdate.ExecuteNonQuery();
+                    }
+                    Console.WriteLine("Press ENTER to return to main menu.");
+                    Console.ReadLine();
+                    CloseConnection();
+                    Menu();
+                }
             }
 
             void AddMember()
@@ -731,7 +740,7 @@ namespace Library
                 }
             }
 
-            Menu();
+           // Menu();
         }
     }
 }
